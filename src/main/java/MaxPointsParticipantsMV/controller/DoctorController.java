@@ -93,6 +93,16 @@ public class DoctorController {
         }
     }
 
+    public void removePatient(String name){
+        Patient p = PatientList.stream().filter(e-> (e.getName() == name)).findFirst().get();
+        PatientList.remove(p);
+        try {
+            rep.savePatientToFile(p);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     // adding of a new consultation for a patient (consultation date,
     // diagnostic, prescription drugs)
 
