@@ -11,14 +11,12 @@ public class Consultation {
     private String consultation_date;
 
     public Consultation() {
-        this.consID = new String();
-        this.PatientSSN = new String();
-        this.diag = new String();
+        this.consID = "";
+        this.PatientSSN = "";
+        this.diag = "";
         this.meds = new ArrayList<String>();
-        this.consultation_date = new String();
+        this.consultation_date = "";
     }
-
-    ;
 
     public Consultation(String consID, String PatientSSN, String diag, List<String> meds, String date) {
         this.consID = consID;
@@ -32,56 +30,31 @@ public class Consultation {
         return consID;
     }
 
-    public void setConsID(String v_consID) {
-        consID = v_consID;
-    }
-
     public String getPatientSSN() {
         return PatientSSN;
-    }
-
-    public void setPatientSSN(String patientSSN) {
-        PatientSSN = patientSSN;
     }
 
     public String getDiag() {
         return diag;
     }
 
-    public void setDiag(String diag) {
-        this.diag = diag;
-    }
-
     public List<String> getMeds() {
         return meds;
     }
 
-    public void setMeds(List<String> meds) {
-        this.meds = meds;
-    }
-
-    public String getConsultation_date() {
-        return consultation_date;
-    }
-
-    public void setConsultation_date(String consultation_date) {
-        this.consultation_date = consultation_date;
-    }
-
     public String toString() {
-        String res;
-        res = consID + "," + PatientSSN + ',' + diag + ",";
+        StringBuilder res;
+        res = new StringBuilder(consID + "," + PatientSSN + ',' + diag + ",");
 
-        for (int i = 0; i < meds.size(); i++) {
-            res = res + meds.get(i) + "+";
+        for (String med : meds) {
+            res.append(med).append("+");
         }
 
-        res = res.substring(0, res.length() - 1);
+        res = new StringBuilder(res.substring(0, res.length() - 1));
 
-        res = res + "," + consultation_date;
+        res.append(",").append(consultation_date);
 
-        return res;
+        return res.toString();
 
     }
-
 }

@@ -4,74 +4,58 @@ public class Patient {
     private String Patient_ID;
     private String Name;
     private String SSN;
-    private String address;
-    private int consNum;
+    private String Adress;
+    private int ConsNum;
 
     /**
      * Constructors
      */
 
     public Patient() {
+        Patient_ID = null;
+        Name = null;
+        SSN = null;
+        Adress = null;
+        ConsNum = -1;
     }
-
-    ;
 
     public Patient(String Name, String SSN, String address) {
         this.Patient_ID = SSN;
         this.Name = Name;
         this.SSN = SSN;
-        this.address = address;
-        this.consNum = 0;
+        this.Adress = address;
+        this.ConsNum = 0;
     }
 
-    /**
-     * Getters and setters
-     */
     public String getPatient_ID() {
         return Patient_ID;
-    }
-
-    public void setPatient_ID(String patient_ID) {
-        Patient_ID = patient_ID;
     }
 
     public String getName() {
         return Name;
     }
 
-    public void setName(String name) {
-        Name = name;
-    }
-
     public String getSSN() {
         return SSN;
     }
 
-    public void setSSN(String sSN) {
-        SSN = sSN;
-    }
-
     public String getAddress() {
-        return address;
+        return Adress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setConsNum(int num) {
-        this.consNum = num;
+    public void incrementConsNum() {
+        this.ConsNum++;
     }
 
     public int getConsNum() {
-        return this.consNum;
+        return this.ConsNum;
     }
 
     /**
      * Others
      */
     public String toString() {
-        return Name + "," + SSN + "," + address;
-        //	return Name + "," + consNum;
+        return Name + "," + SSN + "," + Adress;
+        //	return Name + "," + ConsNum;
     }
 }

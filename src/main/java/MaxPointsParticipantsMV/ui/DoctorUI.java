@@ -8,31 +8,15 @@ import java.util.List;
 import java.util.Scanner;
 
 public class DoctorUI {
-    public DoctorController ctrl;
-    Scanner in;
+    private DoctorController ctrl;
+    private Scanner in;
 
     public DoctorUI(DoctorController ctrl) {
         this.ctrl = ctrl;
         this.in = new Scanner(System.in);
     }
 
-    public DoctorController getCtrl() {
-        return this.ctrl;
-    }
-
-    public Scanner getIn() {
-        return this.in;
-    }
-
-    public void setCtrl(DoctorController newCtrl) {
-        this.ctrl = newCtrl;
-    }
-
-    public void setIn(Scanner newIn) {
-        this.in = newIn;
-    }
-
-    public void printMenu() {
+    private void printMenu() {
         String menu;
         menu = "PatientsManagement Menu: \n";
         menu += "\t 1 - to add a new patient; \n";
@@ -43,7 +27,7 @@ public class DoctorUI {
         System.out.println(menu);
     }
 
-    public void printMedsMenu() {
+    private void printMedsMenu() {
         String menu;
         menu = "Prescriptions Menu: \n";
         menu += "\t 1 - to add a new med; \n";
@@ -52,7 +36,7 @@ public class DoctorUI {
         System.out.println(menu);
     }
 
-    public List<String> RunMeds() {
+    private List<String> RunMeds() {
         List<String> meds = new ArrayList<String>();
         printMedsMenu();
         int cmd = in.nextInt();
@@ -80,7 +64,7 @@ public class DoctorUI {
         //System.out.println(Integer.toString(c));
         while (cmd != 0) {
             if (cmd == 1) {
-                Patient p = null;
+                Patient p;
                 System.out.println("Enter CNP:");
                 String cnp = in.nextLine();
                 System.out.println("Enter name:");

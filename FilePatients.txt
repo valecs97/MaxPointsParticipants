@@ -1,1 +1,2 @@
 Popa,1234567890123,Medias
+Alecs,3210987654321,Cluj Napoca

@@ -5,6 +5,7 @@ import MaxPointsParticipantsMV.exceptions.PatientException;
 import MaxPointsParticipantsMV.model.Consultation;
 import MaxPointsParticipantsMV.model.Patient;
 import MaxPointsParticipantsMV.repository.Repository;
+import MaxPointsParticipantsMV.validator.ConsultationValidation;
 import MaxPointsParticipantsMV.validator.PatientValidation;
 
 import java.io.IOException;
@@ -12,9 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DoctorController {
-
-    private List<Patient> PatientList;
-    private List<Consultation> ConsultationList;
     private Repository rep;
 
     /**
@@ -23,58 +21,13 @@ public class DoctorController {
 
     public DoctorController(Repository rep) {
         this.rep = rep;
-        this.PatientList = rep.getPatientList();
-        this.ConsultationList = rep.getConsultationList();
         // Get list from file in order to avoid duplicates.
-    }
-
-    /**
-     * Getters
-     */
-    public List<Patient> getPatientList() {
-        return PatientList;
-    }
-
-    public List<Consultation> getConsultationList() {
-        return ConsultationList;
-    }
-
-    public void setConsulationList(List<Consultation> consultationList) {
-        ConsultationList = consultationList;
-    }
-
-    public int getPatientBySSN(String SSN) {
-        for (int i = 0; i < PatientList.size(); i++) {
-            if (PatientList.get(i).getSSN().equals(SSN))
-                return i;
-        }
-
-        return -1;
-    }
-
-    public int getConsByID(String ID) {
-        for (int i = 0; i < ConsultationList.size(); i++) {
-            if (ConsultationList.get(i).getConsID().compareTo(ID) == 0) {
-                /*
-                 * System.out.println("I proud to have found " + ID + " here: "
-                 * + i); System.out.println("Proof : " +
-                 * ConsultationList.get(i).toString());
-                 */
-                return i - 1;
-            }
-        }
-
-        return -1;
-    }
-
-    public Repository getRepository() {
-        return rep;
     }
 
     /**
      * Others
      */
-    public void addPatient(Patient p) throws PatientException {
+    public void addPatient(Patient p) throws PatientException, IOException {
         if (p.getName() != null && p.getSSN() != null && p.getAddress() != null) {
             PatientValidation.nameValidate(p.getName());
             PatientValidation.ssnValidate(p.getSSN());
@@ -82,65 +35,36 @@ public class DoctorController {
         } else {
             throw new PatientException("Null fields");
         }
-        if (checkIfContains(p))
+        if (rep.findPatientByID(p.getPatient_ID()) != null)
             throw new PatientException("SSN is not unique!");
-        PatientList.add(p);
-        try {
-            rep.savePatientToFile(p);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        rep.addPatient(p);
     }
 
-    public boolean checkIfContains(Patient p)
-    {
-        for (int i=0;i<PatientList.size();i++)
-            if (PatientList.get(i).getSSN().contains(p.getSSN()))
-                return true;
-        return false;
-    }
-
-    public Patient findPatient(String name){
-        for (int i=0;i<PatientList.size();i++)
-            if (PatientList.get(i).getName().equals(name))
-                return PatientList.get(i);
-        return null;
-    }
-
-    public void removePatient(String name){
-        Patient p = findPatient(name);
-        PatientList.remove(p);
-        try {
-            rep.savePatientToFile(p);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void removePatient(String id) throws IOException {
+        Patient p = rep.findPatientByID(id);
+        rep.removePatient(p);
     }
 
     // adding of a new consultation for a patient (consultation date,
     // diagnostic, prescription drugs)
 
     public void addConsultation(String consID, String patientSSN, String diag,
-                                List<String> meds, String date) throws ConsultationException {
+                                List<String> meds, String date) throws ConsultationException, IOException {
         if (meds == null)
             throw new ConsultationException("meds is null");
 
         if (consID != null && patientSSN != null
                 && diag != null && meds.size() != 0
-                && this.getPatientBySSN(patientSSN) > -1
-                && this.getConsByID(consID) == -1) {
-            Consultation c = new Consultation(consID, patientSSN, diag, meds, date);
-            ConsultationList.add(c);
-            try {
-                rep.saveConsultationToFile(c);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                && rep.findPatientByID(patientSSN) != null
+                && rep.findConsulationByID(consID) == null) {
+            ConsultationValidation.emptyString(consID);
+            ConsultationValidation.emptyString(diag);
+            for (String med : meds) ConsultationValidation.emptyString(med);
+            ConsultationValidation.emptyString(date);
 
-            Patient p = new Patient();
-            p = this.getPatientList().get(
-                    this.getPatientBySSN(c.getPatientSSN()));
-            p.setConsNum(p.getConsNum() + 1);
+            Consultation c = new Consultation(consID, patientSSN, diag, meds, date);
+            rep.findPatientByID(patientSSN).incrementConsNum();
+            rep.addConsultation(c);
         } else {
             throw new ConsultationException("invalid arguments");
         }
@@ -148,7 +72,7 @@ public class DoctorController {
     }
 
     public List<Patient> getPatientsWithDisease(String disease) throws PatientException {
-        List<Consultation> c = this.getConsultationList();
+        List<Consultation> c = rep.getAllConsulations();
         List<Patient> p = new ArrayList<Patient>();
         if (disease != null) {
             if (disease.length() == 0) {
@@ -156,25 +80,19 @@ public class DoctorController {
             }
             int chk = 1;
 
-            for (int i = 0; i < c.size(); i++) {
-                if (c.get(i).getDiag().toLowerCase()
+            for (Consultation aC : c) {
+                if (aC.getDiag().toLowerCase()
                         .contains(disease.toLowerCase())) // so that it is case
                 // insensitive
                 {
-                    for (int j = 0; j < p.size(); j++) // verify patient was
-                    // not already added
-                    {
-                        if (p.get(j).getSSN().equals(c.get(i).getPatientSSN())) {
-                            chk = p.get(j).getConsNum();
+                    for (Patient aP : p) {
+                        if (aP.getSSN().equals(aC.getPatientSSN())) {
+                            chk = aP.getConsNum();
                         }
                     }
 
                     if (chk == 1) {
-                        p.add(this.getPatientList().get(
-                                this.getPatientBySSN(c.get(i).getPatientSSN()))); // get
-                        // Patient
-                        // by
-                        // SSN
+                        p.add(rep.findPatientByID(aC.getPatientSSN())); // get
                     }
                     chk = 1;
                 }
@@ -182,7 +100,7 @@ public class DoctorController {
 
             // Sort the list
 
-            Patient paux = new Patient();
+            Patient paux;
 
             for (int i = 0; i < p.size(); i++)
                 for (int j = i + 1; j < p.size() - 1; j++)
@@ -197,10 +115,5 @@ public class DoctorController {
         return p;
     }
 
-    /*
-     * For debugging purposes public void printList() { for (int i = 0; i <
-     * PatientList.size(); i++) {
-     * System.out.println(PatientList.get(i).toString()); } }
-     */
 
 }
