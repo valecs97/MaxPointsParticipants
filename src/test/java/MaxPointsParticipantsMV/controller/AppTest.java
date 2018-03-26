@@ -6,7 +6,7 @@ import MaxPointsParticipantsMV.repository.Repository;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DoctorControllerTest {
+public class AppTest {
 
     private Repository repo;
     private DoctorController ctrl;
