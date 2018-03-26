@@ -10,7 +10,6 @@ import MaxPointsParticipantsMV.validator.PatientValidation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DoctorController {
 
@@ -83,7 +82,7 @@ public class DoctorController {
         } else {
             throw new PatientException("Null fields");
         }
-        if (PatientList.stream().filter((e1) -> e1.getSSN().contains(p.getSSN())).collect(Collectors.toList()).size() != 0)
+        if (checkIfContains(p))
             throw new PatientException("SSN is not unique!");
         PatientList.add(p);
         try {
@@ -93,8 +92,23 @@ public class DoctorController {
         }
     }
 
+    public boolean checkIfContains(Patient p)
+    {
+        for (int i=0;i<PatientList.size();i++)
+            if (PatientList.get(i).getSSN().contains(p.getSSN()))
+                return true;
+        return false;
+    }
+
+    public Patient findPatient(String name){
+        for (int i=0;i<PatientList.size();i++)
+            if (PatientList.get(i).getName().equals(name))
+                return PatientList.get(i);
+        return null;
+    }
+
     public void removePatient(String name){
-        Patient p = PatientList.stream().filter(e-> (e.getName() == name)).findFirst().get();
+        Patient p = findPatient(name);
         PatientList.remove(p);
         try {
             rep.savePatientToFile(p);
