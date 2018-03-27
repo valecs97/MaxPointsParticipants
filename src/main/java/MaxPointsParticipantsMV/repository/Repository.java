@@ -64,15 +64,16 @@ public class Repository {
         String tok;
         String[] cons;
         String[] meds;
-        List<String> med = new ArrayList<String>();
+
         int i = 0;
         while (i < tokens.length) {
+            List<String> med = new ArrayList<String>();
             tok = tokens[i];
             cons = tok.split(",");
             meds = cons[3].split("\\+");
             Consultation consultation = new Consultation(cons[0], cons[1], cons[2], med, cons[4]);
-            for (int j = 0; j < meds.length - 1; j++) {
-                consultation.getMeds().add(meds[j]);
+            for (String med1 : meds) {
+                consultation.getMeds().add(med1);
             }
             consultationList.add(consultation);
             i = i + 1;
@@ -103,6 +104,15 @@ public class Repository {
         FileWriter fw = new FileWriter(patientsFileName);
         PrintWriter out = new PrintWriter(fw);
         for (Patient aPatientList : patientList) out.println(aPatientList.toString());
+        out.close();
+    }
+
+    public void removeConsulation(Consultation c) throws IOException {
+        consultationList.remove(c);
+        FileWriter fw = new FileWriter(consultationsFileName);
+        PrintWriter out;
+        out = new PrintWriter(fw);
+        for (Consultation aConsultationList : consultationList) out.println(aConsultationList.toString());
         out.close();
     }
 

@@ -45,26 +45,41 @@ public class DoctorController {
         rep.removePatient(p);
     }
 
+    public void removeConsulation (String id) throws  IOException{
+        Consultation c = rep.findConsulationByID(id);
+        rep.removeConsulation(c);
+    }
+
     // adding of a new consultation for a patient (consultation date,
     // diagnostic, prescription drugs)
 
     public void addConsultation(String consID, String patientSSN, String diag,
                                 List<String> meds, String date) throws ConsultationException, IOException {
+        //1
         if (meds == null)
+            //2
             throw new ConsultationException("meds is null");
-
+        //3
         if (consID != null && patientSSN != null
                 && diag != null && meds.size() != 0
                 && rep.findPatientByID(patientSSN) != null
                 && rep.findConsulationByID(consID) == null) {
+            //4
             ConsultationValidation.emptyString(consID);
+            //5
             ConsultationValidation.emptyString(diag);
-            for (String med : meds) ConsultationValidation.emptyString(med);
+            //6
+            for (String med : meds)
+                //7
+                ConsultationValidation.emptyString(med);
+            //8
             ConsultationValidation.emptyString(date);
 
             Consultation c = new Consultation(consID, patientSSN, diag, meds, date);
+            //9
             rep.findPatientByID(patientSSN).incrementConsNum();
             rep.addConsultation(c);
+        //10
         } else {
             throw new ConsultationException("invalid arguments");
         }

@@ -14,8 +14,8 @@ public class BVAPatientTest {
     private DoctorController ctrl;
     @Before
     public void setUp() throws IOException {
-        String patients = "FilePatients.txt";
-        String consultations = "FileConsultations.txt";
+        String patients = "FilePatientsTest.txt";
+        String consultations = "FileConsultationsTest.txt";
         repo = new Repository(patients, consultations);
         ctrl = new DoctorController(repo);
     }

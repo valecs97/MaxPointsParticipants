@@ -47,12 +47,10 @@ public class Consultation {
         res = new StringBuilder(consID + "," + PatientSSN + ',' + diag + ",");
 
         for (String med : meds) {
-            res.append(med).append("+");
+            res.append(med).append(",");
         }
 
-        res = new StringBuilder(res.substring(0, res.length() - 1));
-
-        res.append(",").append(consultation_date);
+        res.append(consultation_date);
 
         return res.toString();
 
