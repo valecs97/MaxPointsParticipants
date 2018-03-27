@@ -37,6 +37,7 @@ public class DoctorControllerTest {
 
     @Test
     public void addConsultationValid() throws IOException {
+        System.out.println("it works");
         Patient p = new Patient("Alecss","3210987664321","Cluj Napoca");
         try {
             ctrl.addPatient(p);
